@@ -1,0 +1,10 @@
+# Postgres (Use these later in your first pgadmin log-on)
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=anihortes
+POSTGRES_SERVER=db
+POSTGRES_DB=postgres
+
+# PgAdmin
+PGADMIN_DEFAULT_EMAIL=admin@admin.com
+PGADMIN_DEFAULT_PASSWORD=anihortes
+PGADMIN_DISABLE_POSTFIX=1 # No mail for pgadmin required
