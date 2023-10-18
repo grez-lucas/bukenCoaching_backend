@@ -60,3 +60,4 @@ class CheckInCreate(BaseModel):
     next_wk_challenges: str
     next_wk_setup_for_success: str
     video_response_url: str
+    files: List[UploadFile] = []

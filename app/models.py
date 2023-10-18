@@ -4,6 +4,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from .database import Base
 from passlib.context import CryptContext
 import uuid
+import datetime
 
 class User(Base):
     __tablename__ = "users"
@@ -34,6 +35,7 @@ class CheckIn(Base):
     next_wk_setup_for_success = Column(String, nullable=False)
     video_response_url = Column(String, nullable=True)
     files = Relationship("BucketFile", cascade="all, delete")
+    # created = Column(DateTime, defauld=datetime.datetime.now())
 
 
 class BucketFile(Base):

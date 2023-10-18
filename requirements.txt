@@ -16,3 +16,4 @@ passlib==1.7.4
 python-multipart
 boto3
 python-magic
+alembic==1.12.0
