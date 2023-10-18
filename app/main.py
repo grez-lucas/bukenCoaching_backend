@@ -110,8 +110,19 @@ async def create_check_in(
 
     return db_check_in
 
+@app.get("/check-ins/", response_model=List[schemas.CheckIn])
+async def read_check_ins(db: db_dependency):
+    check_ins = db.query(models.CheckIn).all()
+    return check_ins
+
+@app.get("/check-ins/{check_in_id}/", response_model=schemas.CheckIn)
+async def get_check_in(check_in_id, db: db_dependency):
+    db_check_in = db.query(models.CheckIn).filter(models.CheckIn.id == check_in_id).first()
+    return db_check_in
+
+
 @app.post("/check-ins/{check_in_id}/photos/", response_model=schemas.BucketPhoto)
-async def upload_file(checkin_id, file_upload: UploadFile, db : db_dependency):
+async def upload_photo(checkin_id, file_upload: UploadFile, db : db_dependency):
     data = await file_upload.read()
     size = len(data)
 
@@ -153,3 +164,9 @@ async def upload_file(checkin_id, file_upload: UploadFile, db : db_dependency):
 
     # Return the file data
     return db_file
+
+@app.get("/check-ins/{check_in_id}/photos/", response_model=List[schemas.BucketPhoto])
+async def get_all_check_in_photos(check_in_id, db: db_dependency):
+    db_photos = db.query(models.BucketPhoto).filter(models.BucketPhoto.checkin_id == check_in_id).all()
+    return db_photos
+

@@ -50,6 +50,7 @@ class CheckIn(BaseModel):
     sleep_level: float
     recovery_level: float
     recovery_detail: str
+    adherence_level: float
     achievements: str
     challenges: str
     next_wk_challenges: str
@@ -64,11 +65,11 @@ class CheckInCreate(BaseModel):
     sleep_level: float
     recovery_level: float
     recovery_detail: str
+    adherence_level: float
     achievements: str
     challenges: str
     next_wk_challenges: str
     next_wk_setup_for_success: str
-    video_response_url: str | None = None
 
 class BucketPhoto(BaseModel):
     photo_name: str
