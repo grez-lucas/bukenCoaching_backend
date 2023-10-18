@@ -3,8 +3,15 @@ from fastapi import UploadFile, File
 from typing import List
 import datetime
 from sqlalchemy.dialects.postgresql import UUID
+from enum import Enum
 import os
 
+# User Types
+class UserType(str, Enum):
+    dietclient = "dietclient"
+    workoutclient = "workoutclient"
+    fullclient = "fullclient"
+    coach = "coach"
 
 
 class User(BaseModel):
@@ -14,7 +21,7 @@ class User(BaseModel):
     email: str
     password: str
     membership_expiration: datetime.datetime
-    is_coach: bool = False
+    type : UserType
 
     
 
@@ -24,7 +31,7 @@ class UserCreate(BaseModel):
     email: str
     password: str
     membership_expiration: datetime.datetime
-    is_coach: bool = False
+    type: UserType = UserType.dietclient
 
 class UserResponse(BaseModel):
     id: int
@@ -38,10 +45,11 @@ class UserResponse(BaseModel):
 class CheckIn(BaseModel):
     id: int
     user_id: int
-    check_in_date: datetime.datetime
     energy_level: float
     stress_level: float
     sleep_level: float
+    recovery_level: float
+    recovery_detail: str
     achievements: str
     challenges: str
     next_wk_challenges: str
@@ -51,10 +59,11 @@ class CheckIn(BaseModel):
 
 class CheckInCreate(BaseModel):
     user_id: int
-    check_in_date: datetime.datetime
     energy_level: float
     stress_level: float
     sleep_level: float
+    recovery_level: float
+    recovery_detail: str
     achievements: str
     challenges: str
     next_wk_challenges: str

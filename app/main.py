@@ -60,19 +60,13 @@ def get_db():
 db_dependency = Annotated[Session, Depends(get_db)]
 
 
-
 @app.post("/users/", response_model=schemas.UserResponse)
 def create_user(
     user: schemas.UserCreate,
     db: db_dependency,
 ):
     db_user = models.User(
-        email=user.email,
-        password=hashing.get_password_hash(user.password),
-        first_name=user.first_name,
-        last_name=user.last_name,
-        membership_expiration=user.membership_expiration,
-        is_coach=user.is_coach
+        **user.dict(),
         
     )
 
