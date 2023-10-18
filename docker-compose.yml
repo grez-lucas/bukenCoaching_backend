@@ -28,7 +28,16 @@ services:
       - .env
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
-
+  
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    environment:
+      - ADMINER_DEFAULT_DB_DRIVER=pgsql
+    depends_on:
+      - db
 
 
 volumes:

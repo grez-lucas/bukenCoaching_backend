@@ -1,5 +1,5 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime, Float
-from sqlalchemy.orm import Relationship
+from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 from .database import Base
 from passlib.context import CryptContext
@@ -34,17 +34,17 @@ class CheckIn(Base):
     next_wk_challenges = Column(String, nullable=False)
     next_wk_setup_for_success = Column(String, nullable=False)
     video_response_url = Column(String, nullable=True)
-    files = Relationship("BucketFile", cascade="all, delete")
-    # created = Column(DateTime, defauld=datetime.datetime.now())
+    photos = relationship("BucketPhoto", cascade="all, delete")
+    created = Column(DateTime, default=datetime.datetime.now())
 
 
-class BucketFile(Base):
-    __tablename__ = "bucket_files"
+class BucketPhoto(Base):
+    __tablename__ = "bucket_photos"
 
     
     id = Column(UUID(as_uuid=True), primary_key=True, index=True, default=uuid.uuid4)
 
-    file_name = Column(String, index=True)
-    file_ext = Column(String, index=True)
+    photo_name = Column(String, index=True)
+    photo_url = Column(String, index=True)
 
     checkin_id = Column(Integer, ForeignKey("check_ins.id"))

@@ -102,6 +102,7 @@ def read_users(db: db_dependency):
 @app.post("/check-ins/", response_model=schemas.CheckIn)
 async def create_check_in(
     check_in: schemas.CheckInCreate,
+    files: List[UploadFile],
     db: db_dependency,
 ):
     # Create a new check-in
@@ -110,7 +111,7 @@ async def create_check_in(
     )
 
     # Handle File Uploads
-    for uploaded_file in check_in.files:
+    for uploaded_file in files:
         # Process the file, save it, and associate it with the check-in
         # You can use libraries like Boto3 if you're using AWS S3
         # Otherwise, save it to your local storage or use a different cloud storage solution
