@@ -25,7 +25,6 @@ class CheckIn(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     check_in_date = Column(DateTime, nullable=False)
-    check_in_text = Column(String, nullable=False)
     energy_level = Column(Float, nullable=False)
     stress_level = Column(Float, nullable=False)
     sleep_level = Column(Float, nullable=False)

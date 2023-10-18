@@ -102,22 +102,12 @@ def read_users(db: db_dependency):
 @app.post("/check-ins/", response_model=schemas.CheckIn)
 async def create_check_in(
     check_in: schemas.CheckInCreate,
-    files: List[UploadFile],
     db: db_dependency,
 ):
     # Create a new check-in
     db_check_in = models.CheckIn(
         **check_in.dict()
     )
-
-    # Handle File Uploads
-    for uploaded_file in files:
-        # Process the file, save it, and associate it with the check-in
-        # You can use libraries like Boto3 if you're using AWS S3
-        # Otherwise, save it to your local storage or use a different cloud storage solution
-        file_data = await handle_uploaded_file(db_check_in.id, uploaded_file, db)  # Pass db_check_in.id instead of check_in.id
-        db_file = models.BucketFile(**file_data)
-        db_check_in.files.append(db_file)
 
     # Add to DB
     db.add(db_check_in)
@@ -126,12 +116,13 @@ async def create_check_in(
 
     return db_check_in
 
-async def handle_uploaded_file(checkin_id, file_upload: UploadFile, db : db_dependency):
+@app.post("/check-ins/{check_in_id}/photos/", response_model=schemas.BucketPhoto)
+async def upload_file(checkin_id, file_upload: UploadFile, db : db_dependency):
     data = await file_upload.read()
     size = len(data)
 
     # Check file size
-    max_size_mb = 4
+    max_size_mb = 100
     if not 0 < size <= max_size_mb * MB:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -147,23 +138,24 @@ async def handle_uploaded_file(checkin_id, file_upload: UploadFile, db : db_depe
         )
     detected_file_ext = SUPPORTED_FILE_TYPES[file_type]
 
+    # Upload to S3
+    s3_client.upload_fileobj(file_upload.file,BUCKET_NAME,  file_upload.filename,
+                           )
+    
+    uploaded_file_url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{file_upload.filename}"
+
+
     # Creation of bucketfile in Postgresql
-    db_file = models.BucketFile(
-        file_name=file_upload.filename,
-        file_ext=detected_file_ext,
-        ckeckin_id=checkin_id,
+    db_file = models.BucketPhoto(
+        photo_name=file_upload.filename,
+        photo_url=uploaded_file_url,
+        checkin_id=checkin_id,
     )
     db.add(db_file)
     db.commit()
     db.refresh(db_file)
+    
 
-    # Upload to S3
-    s3_key = f"{db_file.id}.{db_file.file_ext}"
-    s3_client.put_object(
-        Body=data,
-        Bucket=BUCKET_NAME,
-        Key=s3_key,
-    )
 
     # Return the file data
-    return { "key": s3_key }
+    return db_file

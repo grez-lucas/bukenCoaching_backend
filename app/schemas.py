@@ -2,6 +2,7 @@ from pydantic import BaseModel, validator
 from fastapi import UploadFile, File
 from typing import List
 import datetime
+from sqlalchemy.dialects.postgresql import UUID
 import os
 
 
@@ -45,13 +46,12 @@ class CheckIn(BaseModel):
     challenges: str
     next_wk_challenges: str
     next_wk_setup_for_success: str
-    video_response_url: str
+    video_response_url: str | None = None
     # files: list = []
 
 class CheckInCreate(BaseModel):
     user_id: int
     check_in_date: datetime.datetime
-    check_in_text: str
     energy_level: float
     stress_level: float
     sleep_level: float
@@ -59,5 +59,9 @@ class CheckInCreate(BaseModel):
     challenges: str
     next_wk_challenges: str
     next_wk_setup_for_success: str
-    video_response_url: str
-    files: List[UploadFile] = []
+    video_response_url: str | None = None
+
+class BucketPhoto(BaseModel):
+    photo_name: str
+    photo_url: str
+    checkin_id: int
