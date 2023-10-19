@@ -34,9 +34,11 @@ class CheckIn(Base):
     challenges = Column(String, nullable=False)
     next_wk_challenges = Column(String, nullable=False)
     next_wk_setup_for_success = Column(String, nullable=False)
-    video_response_url = Column(String, nullable=True)
+    video_response_url =  Column(String, nullable=True)
     photos = relationship("BucketPhoto", cascade="all, delete")
     created = Column(DateTime, default=datetime.datetime.now())
+    optional_questions = Column(String, nullable=True)
+    average_weight = Column(Float, nullable=False)
 
 
 class BucketPhoto(Base):

@@ -120,6 +120,13 @@ async def get_check_in(check_in_id, db: db_dependency):
     db_check_in = db.query(models.CheckIn).filter(models.CheckIn.id == check_in_id).first()
     return db_check_in
 
+@app.post("/check-ins/{check_in_id}/", response_model=schemas.CheckIn)
+async def upload_url_response(check_in_id, url: str, db: db_dependency):
+    db_check_in = db.query(models.CheckIn).filter(models.CheckIn.id == check_in_id).first()
+    db_check_in.video_response_url = url
+    db.commit()
+    db.refresh(db_check_in)
+    return db_check_in
 
 @app.post("/check-ins/{check_in_id}/photos/", response_model=schemas.BucketPhoto)
 async def upload_photo(checkin_id, file_upload: UploadFile, db : db_dependency):

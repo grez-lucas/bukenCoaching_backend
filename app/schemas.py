@@ -56,8 +56,9 @@ class CheckIn(BaseModel):
     next_wk_challenges: str
     next_wk_setup_for_success: str
     video_response_url: str | None = None
-    # files: list = []
-
+    optional_questions: str | None = None
+    average_weight: float
+    created: datetime.datetime
 class CheckInCreate(BaseModel):
     user_id: int
     energy_level: float
@@ -70,6 +71,8 @@ class CheckInCreate(BaseModel):
     challenges: str
     next_wk_challenges: str
     next_wk_setup_for_success: str
+    optional_questions: str | None = None
+    average_weight: float
 
 class BucketPhoto(BaseModel):
     photo_name: str
