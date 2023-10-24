@@ -85,3 +85,29 @@ class BucketPhoto(BaseModel):
     photo_name: str
     photo_url: str
     checkin_id: int
+
+class Dashboard(BaseModel):
+    # This is the dashboard for the client, where they can see their check-in data
+    # In a neat format with graphs and stuff
+    total_checkins: int
+    weight_difference: float
+    average_stress: float
+    average_adherance: float
+    weight_graph_x: List[datetime.datetime]
+    weight_graph_y: List[float]
+    adherance_graph_x: List[datetime.datetime]
+    adherance_graph_y: List[float]
+    weekly_soreness_x: List[datetime.datetime]
+    weekly_soreness_y: List[float]
+    percieved_energy_fatigue_graph_x: List[datetime.datetime]
+    percieved_energy_y: List[float]
+    percieved_fatigue_y: List[float]
+    sleep_graph_x: List[datetime.datetime]
+    sleep_graph_y: List[float]
+    stress_graph_x: List[datetime.datetime]
+    stress_graph_y: List[float]
+    blood_pressure_graph_x: List[datetime.datetime] | None = None
+    blood_pressure_systolic_y: List[float] | None = None
+    blood_pressure_diastolic_y: List[float] | None = None
+    blood_sugar_graph_x: List[datetime.datetime] | None = None
+    blood_sugar_y: List[float] | None = None 

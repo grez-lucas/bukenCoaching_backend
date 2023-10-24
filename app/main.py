@@ -1,10 +1,11 @@
 from typing import Union
-from fastapi import Depends, FastAPI, HTTPException, UploadFile, Response, status, File
+from fastapi import Depends, FastAPI, HTTPException, UploadFile, Response, status, File, Body
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from .database import SessionLocal, engine
 from typing import Annotated, List
 from . import schemas, models, hashing
+import datetime
 import os
 import boto3
 import magic
@@ -205,3 +206,103 @@ async def get_all_check_in_photos(check_in_id, db: db_dependency):
     db_photos = db.query(models.BucketPhoto).filter(models.BucketPhoto.checkin_id == check_in_id).all()
     return db_photos
 
+@app.get("/dashboards/{user_id}/", response_model=schemas.Dashboard)
+async def get_dashboard_data( user_id, db: db_dependency, dateFrom:  Annotated[datetime.datetime | None, Body()] = None, dateTo: Annotated[datetime.datetime | None, Body()] = None):
+    
+    selected_check_ins = db.query(models.CheckIn).filter(models.CheckIn.user_id == user_id).filter(models.CheckIn.created >= dateFrom).filter(models.CheckIn.created <= dateTo).all()
+    
+    # Calculate total check-ins
+    total_check_ins = db.query(models.CheckIn).filter(models.CheckIn.user_id == user_id).count()
+
+    # Calculate weight difference
+    weight_difference = selected_check_ins[0].average_weight - selected_check_ins[-1].average_weight
+    
+    # Calculate average stress
+    average_stress = sum(check_in.stress_level for check_in in selected_check_ins) / len(selected_check_ins)
+
+    # Calculate average adherance
+    average_adherance = sum(check_in.adherence_level for check_in in selected_check_ins) / len(selected_check_ins)
+
+    # Get weight graph data
+    weight_graph_x = [check_in.created for check_in in selected_check_ins]
+    weight_graph_y = [check_in.average_weight for check_in in selected_check_ins]
+
+    # Get adherance graph data
+    adherance_graph_x = [check_in.created for check_in in selected_check_ins]
+    adherance_graph_y = [check_in.adherence_level for check_in in selected_check_ins]
+
+    # Get weekly soreness graph data
+    weekly_soreness_x = [check_in.created for check_in in selected_check_ins]
+    weekly_soreness_y = [check_in.recovery_level for check_in in selected_check_ins]
+
+    # Get percieved energy/fatigue graph data
+    percieved_energy_fatigue_graph_x = [check_in.created for check_in in selected_check_ins]
+    percieved_energy_y = [check_in.energy_level for check_in in selected_check_ins]
+    percieved_fatigue_y = [check_in.recovery_level for check_in in selected_check_ins]
+
+    # Get sleep graph data
+    sleep_graph_x = [check_in.created for check_in in selected_check_ins]
+    sleep_graph_y = [check_in.sleep_level for check_in in selected_check_ins]
+
+    # Get stress graph data
+    stress_graph_x = [check_in.created for check_in in selected_check_ins]
+    stress_graph_y = [check_in.stress_level for check_in in selected_check_ins]
+
+    # Check if the user is a pedclient 
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if user.type == "PEDCLIENT":
+        # Get blood pressure graph data
+        blood_pressure_graph_x = [check_in.created for check_in in selected_check_ins]
+        blood_pressure_graph_y = [check_in.blood_pressure_systolic for check_in in selected_check_ins]
+        blood_pressure_graph_y2 = [check_in.blood_pressure_diastolic for check_in in selected_check_ins]
+
+        # Get blood sugar graph data
+        blood_sugar_graph_x = [check_in.created for check_in in selected_check_ins]
+        blood_sugar_graph_y = [check_in.blood_sugar for check_in in selected_check_ins]
+
+        dashboard = schemas.Dashboard(
+            total_checkins=total_check_ins,
+            weight_difference=weight_difference,
+            average_stress=average_stress,
+            average_adherance=average_adherance,
+            weight_graph_x=weight_graph_x,
+            weight_graph_y=weight_graph_y,
+            adherance_graph_x=adherance_graph_x,
+            adherance_graph_y=adherance_graph_y,
+            weekly_soreness_x=weekly_soreness_x,
+            weekly_soreness_y=weekly_soreness_y,
+            percieved_energy_fatigue_graph_x=percieved_energy_fatigue_graph_x,
+            percieved_energy_y=percieved_energy_y,
+            percieved_fatigue_y=percieved_fatigue_y,
+            sleep_graph_x=sleep_graph_x,
+            sleep_graph_y=sleep_graph_y,
+            stress_graph_x=stress_graph_x,
+            stress_graph_y=stress_graph_y,
+            blood_pressure_graph_x=blood_pressure_graph_x,
+            blood_pressure_systolic_y=blood_pressure_graph_y,
+            blood_pressure_diastolic_y=blood_pressure_graph_y2,
+            blood_sugar_graph_x=blood_sugar_graph_x,
+            blood_sugar_graph_y=blood_sugar_graph_y
+        )
+    else:
+        dashboard = schemas.Dashboard(
+            total_checkins=total_check_ins,
+            weight_difference=weight_difference,
+            average_stress=average_stress,
+            average_adherance=average_adherance,
+            weight_graph_x=weight_graph_x,
+            weight_graph_y=weight_graph_y,
+            adherance_graph_x=adherance_graph_x,
+            adherance_graph_y=adherance_graph_y,
+            weekly_soreness_x=weekly_soreness_x,
+            weekly_soreness_y=weekly_soreness_y,
+            percieved_energy_fatigue_graph_x=percieved_energy_fatigue_graph_x,
+            percieved_energy_y=percieved_energy_y,
+            percieved_fatigue_y=percieved_fatigue_y,
+            sleep_graph_x=sleep_graph_x,
+            sleep_graph_y=sleep_graph_y,
+            stress_graph_x=stress_graph_x,
+            stress_graph_y=stress_graph_y,
+        )
+
+    return dashboard
