@@ -11,6 +11,7 @@ class UserType(str, Enum):
     dietclient = "dietclient"
     workoutclient = "workoutclient"
     fullclient = "fullclient"
+    pedclient = "pedclient"
     coach = "coach"
 
 
@@ -58,6 +59,9 @@ class CheckIn(BaseModel):
     video_response_url: str | None = None
     optional_questions: str | None = None
     average_weight: float
+    blood_pressure_systolic: float
+    blood_pressure_diastolic: float
+    blood_sugar: float
     created: datetime.datetime
 class CheckInCreate(BaseModel):
     user_id: int
@@ -73,6 +77,9 @@ class CheckInCreate(BaseModel):
     next_wk_setup_for_success: str
     optional_questions: str | None = None
     average_weight: float
+    blood_pressure_systolic: float | None = None
+    blood_pressure_diastolic: float | None = None
+    blood_sugar: float | None = None
 
 class BucketPhoto(BaseModel):
     photo_name: str

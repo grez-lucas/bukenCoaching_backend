@@ -39,6 +39,9 @@ class CheckIn(Base):
     created = Column(DateTime, default=datetime.datetime.now())
     optional_questions = Column(String, nullable=True)
     average_weight = Column(Float, nullable=False)
+    blood_pressure_systolic = Column(Float, nullable=False)
+    blood_pressure_diastolic = Column(Float, nullable=False)
+    blood_sugar = Column(Float, nullable=False)
 
 
 class BucketPhoto(Base):
