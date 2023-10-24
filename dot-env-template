@@ -1,10 +1,19 @@
+# S3 Bucket
+BUCKET_NAME = "YOUR_BUCKET_NAME"
+AWS_ACCESS_KEY_ID = ACC3SS_K3Y_G03S_H3R3
+AWS_SECRET_ACCESS_KEY = SECR3T_K3Y_G03S_H3R3
+
+# Password cryptography
+SECRET_KEY=893ecc4e6e0b499be54a97bef4451f43546784dfa56c714dce1cb9c89c16c344
+
+
 # Postgres (Use these later in your first pgadmin log-on)
 POSTGRES_USER=postgres
-POSTGRES_PASSWORD=anihortes
+POSTGRES_PASSWORD=supersecretpassword
 POSTGRES_SERVER=db
 POSTGRES_DB=postgres
 
 # PgAdmin
-PGADMIN_DEFAULT_EMAIL=admin@admin.com
-PGADMIN_DEFAULT_PASSWORD=anihortes
+PGADMIN_DEFAULT_EMAIL=example@example.com
+PGADMIN_DEFAULT_PASSWORD=supersecretpassword
 PGADMIN_DISABLE_POSTFIX=1 # No mail for pgadmin required
