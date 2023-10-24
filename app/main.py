@@ -66,8 +66,8 @@ def create_user(
     db: db_dependency,
 ):
     db_user = models.User(
-        **user.dict(),
-        
+        **user.dict(exclude={"password"}),
+        password=hashing.get_password_hash(user.password)        
     )
 
     # Uploading to DB
@@ -91,6 +91,34 @@ def create_user(
 def read_users(db: db_dependency):
     users = db.query(models.User).all()
     return users
+
+@app.patch("/users/{user_id}/", response_model=schemas.UserResponse)
+def update_user(
+    user_id: int,
+    user: schemas.UserCreate,
+    db: db_dependency,
+):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    db_user.first_name = user.first_name
+    db_user.last_name = user.last_name
+    db_user.email = user.email
+    db_user.password = hashing.get_password_hash(user.password)
+    db_user.membership_expiration = user.membership_expiration
+    db_user.type = user.type
+    db.commit()
+    db.refresh(db_user)
+
+    # Create a response using UserResponse schema
+    user_response = schemas.UserResponse(
+        id=db_user.id,
+        first_name=db_user.first_name,
+        last_name=db_user.last_name,
+        email=db_user.email,
+        membership_expiration=db_user.membership_expiration,
+        is_coach=db_user.is_coach
+    )
+
+    return user_response
 
 
 @app.post("/check-ins/", response_model=schemas.CheckIn)
